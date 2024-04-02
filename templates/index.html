@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weader App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('static/rain_on_leaves.jpeg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .weather-container {
+            max-width: 400px;
+            margin: auto;
+            margin-top: 50px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .weather-icon {
+            width: 50px;
+            height: auto;
+        }
+
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .footer h4 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer p {
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="weather-container">
+            <h1 class="text-center mb-4">Weader App</h1>
+            <div class="input-group mb-3">
+                <input type="text" id="cityInput" class="form-control" placeholder="Enter city" style="text-align:center;">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" onclick="getWeather()">Get Weather</button>
+                </div>
+            </div>
+            <div id="weatherInfo" class="weather-info"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h4>@Kelompok 2 IAE</h4>
+        <!-- Created By Stev - SI4509 -->
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function getWeather() {
+            var city = document.getElementById('cityInput').value;
+            fetch('/get_weather?city=' + city)
+            .then(response => response.json())
+            .then(data => {
+                displayWeather(data);
+            });
+        }
+
+        function displayWeather(data) {
+            var weatherInfoDiv = document.getElementById('weatherInfo');
+            weatherInfoDiv.innerHTML = ""; // Clear previous weather info
+            
+            var cityName = document.createElement('h2');
+            cityName.textContent = data.name + ', ' + data.sys.country;
+            weatherInfoDiv.appendChild(cityName);
+
+            var weatherDescription = document.createElement('p');
+            weatherDescription.textContent = 'Weather: ' + data.weather[0].description;
+            weatherInfoDiv.appendChild(weatherDescription);
+
+            var weatherIcon = document.createElement('img');
+            weatherIcon.classList.add('weather-icon');
+            weatherIcon.src = 'http://openweathermap.org/img/wn/' + data.weather[0].icon + '.png';
+            weatherIcon.alt = data.weather[0].description;
+            weatherInfoDiv.appendChild(weatherIcon);
+
+            var temperature = document.createElement('p');
+            temperature.textContent = 'Temperature: ' + ((data.main.temp-273).toFixed(1)) + '°C';
+            weatherInfoDiv.appendChild(temperature);
+
+            var feelsLike = document.createElement('p');
+            feelsLike.textContent = 'Feels like: ' + ((data.main.feels_like - 273).toFixed(1)) + '°C';
+            weatherInfoDiv.appendChild(feelsLike);
+
+            var humidity = document.createElement('p');
+            humidity.textContent = 'Humidity: ' + data.main.humidity + '%';
+            weatherInfoDiv.appendChild(humidity);
+
+            var windSpeed = document.createElement('p');
+            windSpeed.textContent = 'Wind Speed: ' + data.wind.speed + ' m/s';
+            weatherInfoDiv.appendChild(windSpeed);
+
+            var visibility = document.createElement('p');
+            visibility.textContent = 'Visibility: ' + data.visibility + ' meters';
+            weatherInfoDiv.appendChild(visibility);
+        }
+    </script>
+</body>
+</html>

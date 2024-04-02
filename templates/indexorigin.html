@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        .weather-info {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city">
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherInfo" class="weather-info"></div>
+
+    <script>
+        function getWeather() {
+            var city = document.getElementById('cityInput').value;
+            fetch('/get_weather?city=' + city)
+            .then(response => response.json())
+            .then(data => {
+                displayWeather(data);
+            });
+        }
+
+        function displayWeather(data) {
+            var weatherInfoDiv = document.getElementById('weatherInfo');
+            weatherInfoDiv.innerHTML = ""; // Clear previous weather info
+            
+            var cityName = document.createElement('h2');
+            cityName.textContent = data.name + ', ' + data.sys.country;
+            weatherInfoDiv.appendChild(cityName);
+
+            var weatherDescription = document.createElement('p');
+            weatherDescription.textContent = 'Weather: ' + data.weather[0].description;
+            weatherInfoDiv.appendChild(weatherDescription);
+
+            var temperature = document.createElement('p');
+            temperature.textContent = 'Temperature: ' + ((data.main.temp-273).toFixed(1)) + '°C';
+            weatherInfoDiv.appendChild(temperature);
+
+            var feelsLike = document.createElement('p');
+            feelsLike.textContent = 'Feels like: ' + ((data.main.feels_like - 273).toFixed(1)) + '°C';
+            weatherInfoDiv.appendChild(feelsLike);
+
+            var humidity = document.createElement('p');
+            humidity.textContent = 'Humidity: ' + data.main.humidity + '%';
+            weatherInfoDiv.appendChild(humidity);
+
+            var windSpeed = document.createElement('p');
+            windSpeed.textContent = 'Wind Speed: ' + data.wind.speed + ' m/s';
+            weatherInfoDiv.appendChild(windSpeed);
+
+            var visibility = document.createElement('p');
+            visibility.textContent = 'Visibility: ' + data.visibility + ' meters';
+            weatherInfoDiv.appendChild(visibility);
+        }
+    </script>
+</body>
+</html>
