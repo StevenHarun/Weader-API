@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weader App</title>
+    <title>Weather & Airports App</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -19,7 +19,7 @@
         }
 
         .weather-container {
-            max-width: 400px;
+            max-width: 600px;
             margin: auto;
             margin-top: 50px;
             padding: 20px;
@@ -33,11 +33,24 @@
             height: auto;
         }
 
+        .airport-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .airport-item {
+            margin-bottom: 10px;
+        }
+
         .footer {
             margin-top: auto;
             text-align: center;
             padding: 20px;
             background-color: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
         }
 
         .footer h4 {
@@ -53,24 +66,19 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="weather-container">
-            <h1 class="text-center mb-4">Weader App</h1>
-            <div class="input-group mb-3">
-                <input type="text" id="cityInput" class="form-control" placeholder="Enter city" style="text-align:center;">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="button" onclick="getWeather()">Get Weather</button>
-                </div>
+    <div class="weather-container">
+        <h1 class="text-center mb-4">Weather & Airports App</h1>
+        <div class="input-group mb-3">
+            <input type="text" id="cityInput" class="form-control" placeholder="Enter city" style="text-align:center;">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" onclick="getWeather()">Get Weather & Airports</button>
             </div>
-            <div id="weatherInfo" class="weather-info"></div>
         </div>
+        <div id="weatherInfo" class="weather-info"></div>
     </div>
 
     <div class="footer">
-        <h4>Kelompok 2 IAE</h4>
-        <!-- Created By Steven - SI4509 - Telkom University -->
-        <!-- Tasya -->
-        <!-- Chyntia -->
+        <h4>Group 2 IAE</h4>
     </div>
 
     <!-- Bootstrap JS and jQuery -->
@@ -81,50 +89,71 @@
     <script>
         function getWeather() {
             var city = document.getElementById('cityInput').value;
-            fetch('/get_weather?city=' + city)
+            fetch('/get_data?city=' + city)
             .then(response => response.json())
             .then(data => {
-                displayWeather(data);
+                displayWeather(data.weather);
+                displayAirports(data.airport);
             });
         }
 
-        function displayWeather(data) {
+        function displayWeather(weatherData) {
             var weatherInfoDiv = document.getElementById('weatherInfo');
             weatherInfoDiv.innerHTML = ""; // Clear previous weather info
-            
+
+            var weatherHeader = document.createElement('h3');
+            weatherHeader.textContent = 'Weather Information:';
+            weatherInfoDiv.appendChild(weatherHeader);
+
             var cityName = document.createElement('h2');
-            cityName.textContent = data.name + ', ' + data.sys.country;
+            cityName.textContent = weatherData.name + ', ' + weatherData.sys.country;
             weatherInfoDiv.appendChild(cityName);
 
             var weatherDescription = document.createElement('p');
-            weatherDescription.textContent = 'Weather: ' + data.weather[0].description;
+            weatherDescription.textContent = 'Weather: ' + weatherData.weather[0].description;
             weatherInfoDiv.appendChild(weatherDescription);
 
             var weatherIcon = document.createElement('img');
             weatherIcon.classList.add('weather-icon');
-            weatherIcon.src = 'http://openweathermap.org/img/wn/' + data.weather[0].icon + '.png';
-            weatherIcon.alt = data.weather[0].description;
+            weatherIcon.src = 'http://openweathermap.org/img/wn/' + weatherData.weather[0].icon + '.png';
+            weatherIcon.alt = weatherData.weather[0].description;
             weatherInfoDiv.appendChild(weatherIcon);
 
             var temperature = document.createElement('p');
-            temperature.textContent = 'Temperature: ' + ((data.main.temp-273).toFixed(1)) + '°C';
+            temperature.textContent = 'Temperature: ' + ((weatherData.main.temp-273).toFixed(1)) + '°C';
             weatherInfoDiv.appendChild(temperature);
 
-            var feelsLike = document.createElement('p');
-            feelsLike.textContent = 'Feels like: ' + ((data.main.feels_like - 273).toFixed(1)) + '°C';
-            weatherInfoDiv.appendChild(feelsLike);
-
-            var humidity = document.createElement('p');
-            humidity.textContent = 'Humidity: ' + data.main.humidity + '%';
-            weatherInfoDiv.appendChild(humidity);
-
             var windSpeed = document.createElement('p');
-            windSpeed.textContent = 'Wind Speed: ' + data.wind.speed + ' m/s';
+            windSpeed.textContent = 'Wind Speed: ' + weatherData.wind.speed + ' m/s';
             weatherInfoDiv.appendChild(windSpeed);
 
             var visibility = document.createElement('p');
-            visibility.textContent = 'Visibility: ' + data.visibility + ' meters';
+            visibility.textContent = 'Visibility: ' + weatherData.visibility + ' meters';
             weatherInfoDiv.appendChild(visibility);
+        }
+
+        function displayAirports(airportData) {
+            var weatherInfoDiv = document.getElementById('weatherInfo');
+
+            var airportHeader = document.createElement('h3');
+            airportHeader.textContent = 'Airport Information:';
+            weatherInfoDiv.appendChild(airportHeader);
+            
+            var airportList = document.createElement('ul');
+            airportList.classList.add('airport-list'); // Add class to style the list
+           airportData.forEach(function(airport) {
+                var airportItem = document.createElement('li');
+                airportItem.classList.add('airport-item'); // Add class to style each item
+                
+                var airportLink = document.createElement('a');
+                airportLink.href = `https://maps.google.com/?q=${airport.lat},${airport.long}`;
+                airportLink.textContent = `${airport.AirportName} - ${airport.city}, ${airport.country}`;
+                // https://maps.google.com/?q=${airport.lat},${airport.long}
+
+                airportItem.appendChild(airportLink);
+                airportList.appendChild(airportItem);
+            });
+            weatherInfoDiv.appendChild(airportList);
         }
     </script>
 </body>
