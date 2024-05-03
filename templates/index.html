@@ -147,7 +147,7 @@
                 
                 var airportLink = document.createElement('a');
                 airportLink.href = `https://maps.google.com/?q=${airport.lat},${airport.long}`;
-                airportLink.textContent = `${airport.AirportName} - ${airport.city}, ${airport.country}`;
+                airportLink.textContent = `${airport.AirportCode} | ${airport.AirportName} - ${airport.city}, ${airport.country}`;
                 // https://maps.google.com/?q=${airport.lat},${airport.long}
 
                 airportItem.appendChild(airportLink);
